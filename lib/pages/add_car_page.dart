@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pks6/model/product.dart';
+import 'package:pks9/model/product.dart';
+import 'package:pks9/api_service.dart';
 
 class AddCarPage extends StatefulWidget {
   const AddCarPage({super.key});
@@ -10,11 +11,47 @@ class AddCarPage extends StatefulWidget {
 
 class _AddCarPageState extends State<AddCarPage> {
   final _formKey = GlobalKey<FormState>();
+  final ApiService _apiService = ApiService();
+
   String title = '';
   String description = '';
   String imageUrl = '';
   String cost = '';
   String article = '';
+  bool isLoading = false;
+
+  Future<void> _addCar() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    _formKey.currentState!.save();
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final newCar = Car(
+      DateTime.now().millisecondsSinceEpoch,
+      title,
+      description,
+      imageUrl,
+      cost,
+      article,
+    );
+
+    try {
+      final createdCar = await _apiService.createProducts(newCar);
+      Navigator.pop(context, createdCar);  // Возвращаем новый объект на предыдущий экран
+    } catch (e) {
+      // Отображение ошибки при создании автомобиля
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при добавлении автомобиля: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,37 +65,28 @@ class _AddCarPageState extends State<AddCarPage> {
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
-            child: SingleChildScrollView( 
+            child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Название'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Пожалуйста, введите название';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      title = value!;
-                    },
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Пожалуйста, введите название'
+                        : null,
+                    onSaved: (value) => title = value!,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Описание'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Пожалуйста, введите описание';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      description = value!;
-                    },
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Пожалуйста, введите описание'
+                        : null,
+                    onSaved: (value) => description = value!,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    decoration: const InputDecoration(labelText: 'URL изображения'),
+                    decoration:
+                    const InputDecoration(labelText: 'URL изображения'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Пожалуйста, введите URL изображения';
@@ -68,53 +96,31 @@ class _AddCarPageState extends State<AddCarPage> {
                       }
                       return null;
                     },
-                    onSaved: (value) {
-                      imageUrl = value!;
-                    },
+                    onSaved: (value) => imageUrl = value!,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Цена'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Пожалуйста, введите цену';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      cost = value!;
-                    },
+                    validator: (value) =>
+                    value == null || value.isEmpty
+                        ? 'Пожалуйста, введите цену'
+                        : null,
+                    onSaved: (value) => cost = value!,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Артикул'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Пожалуйста, введите артикул';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      article = value!;
-                    },
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Пожалуйста, введите артикул'
+                        : null,
+                    onSaved: (value) => article = value!,
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        final newCar = Car(
-                          id: DateTime.now().millisecondsSinceEpoch,
-                          title: title,
-                          description: description,
-                          imageUrl: imageUrl,
-                          cost: cost,
-                          article: article,
-                        );
-                        Navigator.pop(context, newCar);
-                      }
-                    },
-                    child: const Text('Добавить'),
+                    onPressed: isLoading ? null : _addCar,
+                    child: isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Добавить'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueGrey,
                     ),

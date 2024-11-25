@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:pks6/model/product.dart';
+import 'package:pks9/model/product.dart';
+import 'package:pks9/api_service.dart';
+
+class CartItem {
+  final Car car;
+  int quantity;
+
+  CartItem({
+    required this.car,
+    required this.quantity,
+  });
+}
 
 class CartPage extends StatelessWidget {
   final List<CartItem> cartItems;
   final Function(Car) onRemove;
   final Function(Car, int) onUpdateQuantity;
+  final ApiService apiService = ApiService();
 
-  const CartPage({
+  CartPage({
     super.key,
     required this.cartItems,
     required this.onRemove,
@@ -56,7 +68,10 @@ class CartPage extends StatelessWidget {
                                 child: const Text('Отмена'),
                               ),
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(true),
+                                onPressed: () async {
+                                  await apiService.deleteProduct(item.car.id);
+                                  Navigator.of(context).pop(true);
+                                },
                                 child: const Text('Удалить'),
                               ),
                             ],
@@ -89,7 +104,7 @@ class CartPage extends StatelessWidget {
                         },
                       ),
                       title: Text(item.car.title),
-                      subtitle: Text(item.car.cost),
+                      subtitle: Text('${item.car.cost} руб.'),
                       trailing: SizedBox(
                         width: 120,
                         child: Row(
@@ -98,7 +113,9 @@ class CartPage extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.remove),
                               onPressed: () {
-                                onUpdateQuantity(item.car, item.quantity - 1);
+                                if (item.quantity > 1) {
+                                  onUpdateQuantity(item.car, item.quantity - 1);
+                                }
                               },
                             ),
                             Text(item.quantity.toString()),
@@ -135,7 +152,7 @@ class CartPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Покупка оформлена!')),
                       );

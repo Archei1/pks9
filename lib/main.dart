@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pks6/pages/home_page.dart';
-import 'package:pks6/pages/favorites_page.dart';
-import 'package:pks6/pages/profile_page.dart';
-import 'package:pks6/pages/cart_page.dart';
+import 'package:pks9/pages/home_page.dart';
+import 'package:pks9/pages/favorites_page.dart';
+import 'package:pks9/pages/profile_page.dart';
+import 'package:pks9/pages/cart_page.dart';
 import 'model/product.dart';
 
 void main() {
@@ -85,6 +85,9 @@ class _MainPageState extends State<MainPage> {
       _selectedIndex = index;
     });
   }
+  void _onEdit(Car car) {
+    print('Редактирование машины: ${car.title}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +96,13 @@ class _MainPageState extends State<MainPage> {
         onFavoriteToggle: _toggleFavorite,
         favoriteCars: _favoriteCars,
         onAddToCart: _addToCart,
+        onEdit: _onEdit,
       ),
       FavoritesPage(
         favoriteCars: _favoriteCars,
         onFavoriteToggle: _toggleFavorite,
         onAddToCart: _addToCart,
+        onEdit: _onEdit,
       ),
       CartPage(
         cartItems: _cartItems,

@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _phoneController =
   TextEditingController(text: '+7 123 456-78-90');
   final TextEditingController _avatarUrlController =
-  TextEditingController(text: 'https://www.example.com/avatar.jpg');
+  TextEditingController(text: 'https://avatars.dzeninfra.ru/get-zen_doc/1875939/pub_5d0694d862f9700db603f9b7_5d069802353a0c0d81786116/scale_1200');
 
   final _formKey = GlobalKey<FormState>();
 

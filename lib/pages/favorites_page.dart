@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:pks6/model/product.dart';
-import 'package:pks6/components/item.dart';
+import 'package:pks9/model/product.dart';
+import 'package:pks9/components/item.dart';
 
 class FavoritesPage extends StatelessWidget {
   final List<Car> favoriteCars;
   final Function(Car) onFavoriteToggle;
   final Function(Car) onAddToCart;
+  final Function(Car) onEdit;
 
   const FavoritesPage({
     super.key,
     required this.favoriteCars,
     required this.onFavoriteToggle,
     required this.onAddToCart,
+    required this.onEdit,
+
   });
 
   @override
@@ -32,6 +35,9 @@ class FavoritesPage extends StatelessWidget {
               isFavorite: true,
               onFavoriteToggle: () => onFavoriteToggle(car),
               onAddToCart: () => onAddToCart(car),
+              onEdit: (){
+                onEdit(car);
+              },
             );
           },
         )
